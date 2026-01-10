@@ -6,6 +6,7 @@ import (
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
+	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/gemini"
 	"github.com/joho/godotenv"
 	"io"
 	"log"
@@ -49,6 +50,8 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
 
+	dispatcher.AddHandler(handlers.NewCommand("openChat", chat))
+
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: true,
 		GetUpdatesOpts: &gotgbot.GetUpdatesOpts{
@@ -65,7 +68,20 @@ func main() {
 	// Idle, to keep updates coming in, and avoid bot stopping.
 	updater.Idle()
 }
+func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
+	msg := gemini.GeminiResponse()
+	_, err := ctx.EffectiveMessage.Reply(b, msg, &gotgbot.SendMessageOpts{
+		ParseMode: "HTML",
+	},
+	)
+	if err != nil {
+		return fmt.Errorf("failed to send source: %w", err)
+	}
+
+	return nil
+
+}
 func openChallenge(b *gotgbot.Bot, ctx *ext.Context, clockLimit string, clockIncrement string, duelName string, rated bool) error {
 
 	urlL := "https://lichess.org/api/challenge/open"
