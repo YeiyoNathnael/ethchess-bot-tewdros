@@ -55,7 +55,7 @@ func GeminiResponse(userRequest string) string {
 		log.Fatal(err)
 	}
 
-	chat, err := client.Chats.Create(ctx, "gemma-3-27b", nil, nil)
+	chat, err := client.Chats.Create(ctx, "gemini-2.0-flash-lite", nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
