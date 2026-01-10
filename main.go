@@ -72,7 +72,7 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	msg := gemini.GeminiResponse()
 	_, err := ctx.EffectiveMessage.Reply(b, msg, &gotgbot.SendMessageOpts{
-		ParseMode: "HTML",
+		ParseMode: "MarkdownV2",
 	},
 	)
 	if err != nil {
