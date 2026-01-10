@@ -190,8 +190,6 @@ Right now I’m still warming up, so I can’t chat naturally yet — but I *can
 /bullet     \- bullet game   
 /bulletr    \- rated bullet game   
 
-/rapid      \- rapid game   
-/rapidr     \- rated rapid game   
 
 /open x y   \- custom time control ⏱️  
 \(x \= seconds, y \= increment\)
