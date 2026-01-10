@@ -11,7 +11,7 @@ import (
 
 // Your Google API key
 
-func GeminiResponse() string {
+func GeminiResponse(userRequest string) string {
 
 	//	var GeminiRes struct {
 	//		Url string `json:"url"`
@@ -60,13 +60,7 @@ func GeminiResponse() string {
 		log.Fatal(err)
 	}
 
-	result, err := chat.SendMessage(ctx, genai.Part{Text: "What's the weather in New York?"})
-	if err != nil {
-		log.Fatal(err)
-	}
-	debugPrint(result)
-
-	result, err = chat.SendMessage(ctx, genai.Part{Text: "How about San Francisco?"})
+	result, err := chat.SendMessage(ctx, genai.Part{Text: userRequest})
 	if err != nil {
 		log.Fatal(err)
 	}
