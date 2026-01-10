@@ -3,7 +3,6 @@ package gemini
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/joho/godotenv"
 	"google.golang.org/genai"
 	"log"
@@ -13,6 +12,34 @@ import (
 // Your Google API key
 
 func GeminiResponse() string {
+
+	//	var GeminiRes struct {
+	//		Url string `json:"url"`
+	//	}
+
+	//if err := json.Unmarshal(body, &LichessChallengeResponse); err != nil {
+	//		return fmt.Errorf("parsing failed: %w", err)
+	//	}
+
+	type Part struct {
+		Text string `json:"text"`
+		Role string `json:"role"`
+	}
+
+	type Content struct {
+		Parts []Part `json:"parts"`
+		Role  string `json:"role"`
+	}
+
+	type Candidate struct {
+		Content      Content `json:"content"`
+		FinishReason string  `json:"finishReason"`
+	}
+	var GeminiRes struct {
+		Url string `json:"url"`
+
+		Candidates []Candidate `json:"candidates"`
+	}
 
 	err := godotenv.Load()
 	apiKey := os.Getenv("GEMINI_API_KEY")
@@ -43,16 +70,20 @@ func GeminiResponse() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	response, err := json.MarshalIndent(result, "", "  ")
-	return string(response)
+
+	geminiRes := debugPrint(result)
+
+	json.Unmarshal(geminiRes, &GeminiRes)
+	return GeminiRes.Candidates[0].Content.Parts[0].Text
+
 }
 
-func debugPrint[T any](r *T) {
+func debugPrint[T any](r *T) []byte {
 
-	response, err := json.MarshalIndent(*r, "", "  ")
+	response, err := json.Marshal(*r)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(string(response))
+	return response
 }
