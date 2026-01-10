@@ -17,9 +17,6 @@ import (
 	"time"
 )
 
-// This bot demonstrates some example interactions with commands on telegram.
-// It has a basic start command with a bot intro.
-// It also has a source command, which sends the bot sourcecode, as a file.
 func main() {
 	// Get token from the environment variable
 	err := godotenv.Load()
@@ -46,8 +43,12 @@ func main() {
 
 	// /start command to introduce the bot
 	dispatcher.AddHandler(handlers.NewCommand("start", start))
-	// /source command to send the bot source code
-	// Start receiving updates.
+	dispatcher.AddHandler(handlers.NewCommand("blitz", blitz))
+	dispatcher.AddHandler(handlers.NewCommand("blitzr", blitzr))
+	dispatcher.AddHandler(handlers.NewCommand("bullet", bullet))
+	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
+	dispatcher.AddHandler(handlers.NewCommand("open", open))
+
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: true,
 		GetUpdatesOpts: &gotgbot.GetUpdatesOpts{
@@ -107,6 +108,66 @@ func openChallenge(b *gotgbot.Bot, ctx *ext.Context, clockLimit string, clockInc
 	if err != nil {
 		return fmt.Errorf("failed to send source: %w", err)
 	}
+
+	return nil
+
+}
+
+func blitz(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	openChallenge(b, ctx, "180", "2", "Grand Blitz Duel", false)
+
+	return nil
+
+}
+
+func blitzr(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	openChallenge(b, ctx, "180", "2", "Grand Blitz Duel", true)
+
+	return nil
+
+}
+
+func bullet(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	openChallenge(b, ctx, "60", "0", "Grand Blitz Duel", false)
+
+	return nil
+
+}
+
+func bulletr(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	openChallenge(b, ctx, "60", "0", "Grand Blitz Duel", true)
+
+	return nil
+
+}
+
+func open(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	args := ctx.Args()
+
+	if len(args) < 2 {
+
+		_, err := ctx.EffectiveMessage.Reply(b, "Please provide a time limit, e.g., /open 300", nil)
+
+		return err
+
+	}
+
+	clockLimit := args[1]
+
+	increment := "0"
+
+	if len(args) > 2 {
+
+		increment = args[2]
+
+	}
+
+	openChallenge(b, ctx, clockLimit, increment, "Open Challenge Duel", false)
 
 	return nil
 
