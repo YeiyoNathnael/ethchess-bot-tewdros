@@ -115,7 +115,7 @@ func openChallenge(b *gotgbot.Bot, ctx *ext.Context, clockLimit string, clockInc
 
 func blitz(b *gotgbot.Bot, ctx *ext.Context) error {
 
-	openChallenge(b, ctx, "180", "2", "Grand Blitz Duel", false)
+	openChallenge(b, ctx, "180", "0", "Grand Blitz Duel", false)
 
 	return nil
 
