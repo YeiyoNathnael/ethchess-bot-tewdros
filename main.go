@@ -70,9 +70,19 @@ func main() {
 }
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
-	msg := gemini.GeminiResponse()
+	args := ctx.Args()
+
+	if len(args) < 2 {
+
+		_, err := ctx.EffectiveMessage.Reply(b, "Please provide a time limit, e.g., /open 300", nil)
+
+		return err
+
+	}
+
+	msg := gemini.GeminiResponse(strings.Join(args, ""))
 	_, err := ctx.EffectiveMessage.Reply(b, msg, &gotgbot.SendMessageOpts{
-		ParseMode: "MarkdownV2",
+		ParseMode: "HTML",
 	},
 	)
 	if err != nil {
