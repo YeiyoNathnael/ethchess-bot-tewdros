@@ -13,14 +13,6 @@ import (
 
 func GeminiResponse(userRequest string) string {
 
-	//	var GeminiRes struct {
-	//		Url string `json:"url"`
-	//	}
-
-	//if err := json.Unmarshal(body, &LichessChallengeResponse); err != nil {
-	//		return fmt.Errorf("parsing failed: %w", err)
-	//	}
-
 	type Part struct {
 		Text string `json:"text"`
 		Role string `json:"role"`
@@ -55,7 +47,7 @@ func GeminiResponse(userRequest string) string {
 		log.Fatal(err)
 	}
 
-	chat, err := client.Chats.Create(ctx, "gemini-2.0-flash-lite", nil, nil)
+	chat, err := client.Chats.Create(ctx, "gemma-3-27b-it", nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
