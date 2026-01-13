@@ -49,7 +49,6 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("bullet", bullet))
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
-
 	dispatcher.AddHandler(handlers.NewCommand("openChat", chat))
 
 	err = updater.StartPolling(b, &ext.PollingOpts{
@@ -68,25 +67,20 @@ func main() {
 	// Idle, to keep updates coming in, and avoid bot stopping.
 	updater.Idle()
 }
-func chat(b *gotgbot.Bot, ctx *ext.Context) error {
+func chat(b *gotgbot.Bot, message *gotgbot.Message, ctx *ext.Context) error {
 
-	args := ctx.Args()
+	args := ctx.EffectiveMessage
 
-	if len(args) < 2 {
+	if message.ReplyToMessage.From.Id == 7720642643 {
 
-		_, err := ctx.EffectiveMessage.Reply(b, "Please provide a time limit, e.g., /open 300", nil)
-
-		return err
-
-	}
-
-	msg := gemini.GeminiResponse(strings.Join(args, ""))
-	_, err := ctx.EffectiveMessage.Reply(b, msg, &gotgbot.SendMessageOpts{
-		ParseMode: "HTML",
-	},
-	)
-	if err != nil {
-		return fmt.Errorf("failed to send source: %w", err)
+		reply := gemini.GeminiResponse(args.Text)
+		_, err := ctx.EffectiveMessage.Reply(b, reply, &gotgbot.SendMessageOpts{
+			ParseMode: "HTML",
+		},
+		)
+		if err != nil {
+			return fmt.Errorf("failed to send source: %w", err)
+		}
 	}
 
 	return nil
