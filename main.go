@@ -50,9 +50,9 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("bullet", bullet))
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
-	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
-		return msg.ReplyToMessage != nil
-	}, chat))
+	//FIX: dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
+	//	return msg.ReplyToMessage != nil
+	//}, chat))
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: true,
 		GetUpdatesOpts: &gotgbot.GetUpdatesOpts{
@@ -86,6 +86,10 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 			return fmt.Errorf("failed to send source: %w", err)
 		}
 	}
+	// FIX:	for _,e := range msg.Entities{
+	//	if e
+
+	//}
 
 	return nil
 
