@@ -49,7 +49,6 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("bullet", bullet))
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
-	dispatcher.AddHandler(handlers.NewCommand("openChat", chat))
 
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: true,
