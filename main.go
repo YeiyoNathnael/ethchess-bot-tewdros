@@ -3,11 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/PaulSonOfLars/gotgbot/v2"
-	"github.com/PaulSonOfLars/gotgbot/v2/ext"
-	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
-	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/gemini"
-	"github.com/joho/godotenv"
 	"io"
 	"log"
 	"net/http"
@@ -16,6 +11,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/PaulSonOfLars/gotgbot/v2"
+	"github.com/PaulSonOfLars/gotgbot/v2/ext"
+	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
+	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/gemini"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -49,7 +50,9 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("bullet", bullet))
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
-
+	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
+		return msg.ReplyToMessage != nil
+	}, chat))
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: true,
 		GetUpdatesOpts: &gotgbot.GetUpdatesOpts{
@@ -59,6 +62,7 @@ func main() {
 			},
 		},
 	})
+
 	if err != nil {
 		panic("failed to start polling: " + err.Error())
 	}
@@ -66,14 +70,15 @@ func main() {
 	// Idle, to keep updates coming in, and avoid bot stopping.
 	updater.Idle()
 }
-func chat(b *gotgbot.Bot, message *gotgbot.Message, ctx *ext.Context) error {
+func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
-	args := ctx.EffectiveMessage
+	msg := ctx.EffectiveMessage
 
-	if message.ReplyToMessage.From.Id == 7720642643 {
+	// Check if this is a reply and if it's replying to the bot
+	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
-		reply := gemini.GeminiResponse(args.Text)
-		_, err := ctx.EffectiveMessage.Reply(b, reply, &gotgbot.SendMessageOpts{
+		reply := gemini.GeminiResponse(msg.Text)
+		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 			ParseMode: "HTML",
 		},
 		)
