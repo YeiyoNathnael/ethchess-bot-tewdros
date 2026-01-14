@@ -86,7 +86,8 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	msg := ctx.EffectiveMessage
 	for _, e := range msg.NewChatMembers {
-		_, err := msg.Reply(b, e.FirstName, &gotgbot.SendMessageOpts{
+		joinedUser := e.Username
+		_, err := msg.Reply(b, gemini.GeminiResponse("a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well. only send me the welcome message nothing else. the user's name is"+joinedUser), &gotgbot.SendMessageOpts{
 			ParseMode: "HTML",
 		},
 		)
