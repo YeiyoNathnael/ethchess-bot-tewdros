@@ -63,7 +63,7 @@ func main() {
 				}
 			}
 		}
-		return (msg.ReplyToMessage != nil)
+		return (msg.ReplyToMessage != nil || msg.NewChatMembers != nil)
 	}, chat))
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: true,
@@ -85,7 +85,16 @@ func main() {
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	msg := ctx.EffectiveMessage
+	for _, e := range msg.NewChatMembers {
+		_, err := msg.Reply(b, e.FirstName, &gotgbot.SendMessageOpts{
+			ParseMode: "HTML",
+		},
+		)
+		if err != nil {
+			return fmt.Errorf("failed to send source: %w", err)
+		}
 
+	}
 	// Check if this is a reply and if it's replying to the bot
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
