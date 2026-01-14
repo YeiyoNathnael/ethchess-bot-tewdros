@@ -47,7 +47,13 @@ func GeminiResponse(userRequest string) string {
 		log.Fatal(err)
 	}
 
-	chat, err := client.Chats.Create(ctx, "gemma-3-27b-it", nil, nil)
+	chat, err := client.Chats.Create(ctx, "gemma-3-27b-it", &genai.GenerateContentConfig{SystemInstruction: &genai.Content{
+		Parts: []*genai.Part{
+			{
+				Text: "Answer only in 1 sentence",
+			},
+		},
+	}}, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
