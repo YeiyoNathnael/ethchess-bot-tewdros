@@ -55,7 +55,15 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
 	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
-		return msg.ReplyToMessage != nil
+		for _, e := range msg.Entities {
+			if e.Type == "mention" {
+				mentioned := msg.Text[e.Offset : e.Offset+e.Length]
+				if mentioned == botUserName {
+					return true
+				}
+			}
+		}
+		return (msg.ReplyToMessage != nil)
 	}, chat))
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: true,
