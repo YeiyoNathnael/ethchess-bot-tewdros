@@ -19,7 +19,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// var botID int = 7720642643
+var botUserName string = "@ETHCHESSSupportbot"
+
 func main() {
+
 	// Get token from the environment variable
 	err := godotenv.Load()
 	token := os.Getenv("TOKEN")
@@ -50,9 +54,9 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("bullet", bullet))
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
-	//FIX: dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
-	//	return msg.ReplyToMessage != nil
-	//}, chat))
+	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
+		return msg.ReplyToMessage != nil
+	}, chat))
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: true,
 		GetUpdatesOpts: &gotgbot.GetUpdatesOpts{
@@ -86,10 +90,24 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 			return fmt.Errorf("failed to send source: %w", err)
 		}
 	}
-	// FIX:	for _,e := range msg.Entities{
-	//	if e
+	for _, e := range msg.Entities {
+		if e.Type == "mention" {
+			mentioned := msg.Text[e.Offset : e.Offset+e.Length]
+			if mentioned == botUserName {
+				reply := gemini.GeminiResponse(msg.Text)
+				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
+					ParseMode: "HTML",
+				},
+				)
+				if err != nil {
+					return fmt.Errorf("failed to send source: %w", err)
+				}
 
-	//}
+			}
+
+		}
+
+	}
 
 	return nil
 
