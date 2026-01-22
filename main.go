@@ -16,6 +16,7 @@ import (
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
 	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/gemini"
+	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/lichess"
 	"github.com/joho/godotenv"
 	"google.golang.org/genai"
 )
@@ -56,6 +57,8 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("blitzr", blitzr))
 	dispatcher.AddHandler(handlers.NewCommand("bullet", bullet))
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
+
+	dispatcher.AddHandler(handlers.NewCommand("user", getLichessRating))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
 	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
 		for _, e := range msg.Entities {
@@ -84,6 +87,26 @@ func main() {
 
 	// Idle, to keep updates coming in, and avoid bot stopping.
 	updater.Idle()
+}
+
+func getLichessRating(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	username := ctx.Args()
+
+	if len(username) < 2 {
+
+		_, _ = ctx.EffectiveMessage.Reply(b, "Please provide a time limit, e.g., /open 300", nil)
+
+		return nil
+
+	}
+
+	user := username[1]
+	userRating := lichess.GetLichessUser(user)
+	_, _ = ctx.EffectiveMessage.Reply(b, strconv.FormatInt(userRating, 10), &gotgbot.SendMessageOpts{
+		ParseMode: "HTML",
+	})
+	return nil
 }
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
