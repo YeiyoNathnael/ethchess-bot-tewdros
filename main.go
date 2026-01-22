@@ -16,12 +16,15 @@ import (
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
 	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/gemini"
+	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/lichess"
 	"github.com/joho/godotenv"
 	"google.golang.org/genai"
 )
 
 // var botID int = 7720642643
 var botUserName string = "@ETHCHESSSupportbot"
+
+var history *genai.Chat
 
 func main() {
 
@@ -54,6 +57,8 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("blitzr", blitzr))
 	dispatcher.AddHandler(handlers.NewCommand("bullet", bullet))
 	dispatcher.AddHandler(handlers.NewCommand("bulletr", bulletr))
+
+	dispatcher.AddHandler(handlers.NewCommand("user", getLichessRating))
 	dispatcher.AddHandler(handlers.NewCommand("open", open))
 	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
 		for _, e := range msg.Entities {
@@ -83,17 +88,38 @@ func main() {
 	// Idle, to keep updates coming in, and avoid bot stopping.
 	updater.Idle()
 }
+
+func getLichessRating(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	username := ctx.Args()
+
+	if len(username) < 2 {
+
+		_, _ = ctx.EffectiveMessage.Reply(b, "Please provide a time limit, e.g., /open 300", nil)
+
+		return nil
+
+	}
+
+	user := username[1]
+	userRating := lichess.GetLichessUser(user)
+	_, _ = ctx.EffectiveMessage.Reply(b, strconv.FormatInt(userRating, 10), &gotgbot.SendMessageOpts{
+		ParseMode: "HTML",
+	})
+	return nil
+}
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	msg := ctx.EffectiveMessage
-
-	var history *genai.Chat
+	if history == nil {
+		history = &genai.Chat{}
+	}
 	for _, e := range msg.NewChatMembers {
 		joinedUser := e.Username
 		geminiResponse, chat := gemini.GeminiResponse("a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well. only send me the welcome message nothing else. the user's name is"+joinedUser, gemini.Gemma_3_27b.String(), history)
 
 		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
-			ParseMode: "HTML",
+			ParseMode: "MarkdownV2",
 		},
 		)
 		if err != nil {
@@ -105,9 +131,10 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 	// Check if this is a reply and if it's replying to the bot
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
-		reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_3_27b.String(), history)
+		//TODO: room for improvement on the hardcoded prompt :)
+		reply, chat := gemini.GeminiResponse(msg.Text+"Remember to limit your response to less than 1024 characters or 10 sentences.", gemini.Gemma_3_27b.String(), history)
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
-			ParseMode: "HTML",
+			ParseMode: "MarkdownV2",
 		},
 		)
 		if err != nil {
@@ -119,9 +146,9 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 		if e.Type == "mention" {
 			mentioned := msg.Text[e.Offset : e.Offset+e.Length]
 			if mentioned == botUserName {
-				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_3_27b.String(), history)
+				reply, chat := gemini.GeminiResponse(msg.Text+"Remember to limit your response to less than 1024 characters or 10 sentences.", gemini.Gemma_3_27b.String(), history)
 				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
-					ParseMode: "HTML",
+					ParseMode: "MarkdownV2",
 				},
 				)
 				if err != nil {
