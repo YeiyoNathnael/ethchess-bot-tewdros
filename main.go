@@ -96,7 +96,7 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 		geminiResponse, chat := gemini.GeminiResponse("a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well. only send me the welcome message nothing else. the user's name is"+joinedUser, gemini.Gemma_3_27b.String(), history)
 
 		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
-			ParseMode: "HTML",
+			ParseMode: "MarkdownV2",
 		},
 		)
 		if err != nil {
@@ -111,7 +111,7 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 		//TODO: room for improvement on the hardcoded prompt :)
 		reply, chat := gemini.GeminiResponse(msg.Text+"Remember to limit your response to less than 1024 characters or 10 sentences.", gemini.Gemma_3_27b.String(), history)
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
-			ParseMode: "HTML",
+			ParseMode: "MarkdownV2",
 		},
 		)
 		if err != nil {
@@ -125,7 +125,7 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 			if mentioned == botUserName {
 				reply, chat := gemini.GeminiResponse(msg.Text+"Remember to limit your response to less than 1024 characters or 10 sentences.", gemini.Gemma_3_27b.String(), history)
 				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
-					ParseMode: "HTML",
+					ParseMode: "MarkdownV2",
 				},
 				)
 				if err != nil {
