@@ -70,7 +70,9 @@ func GeminiResponse(userRequest string, model string, chatt *genai.Chat) (string
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	if chatt == nil {
+		chatt = &genai.Chat{}
+	}
 	chat, err := client.Chats.Create(ctx, model, nil, chatt.History(true))
 	if err != nil {
 		log.Fatal(err)
