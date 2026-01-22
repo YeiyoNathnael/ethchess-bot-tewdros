@@ -92,7 +92,7 @@ func GeminiResponse(userRequest string, model string, chatt *genai.Chat) (string
 	var buf bytes.Buffer
 	md := tgmd.TGMD()
 
-	err := md.Convert([]byte(response), &buf)
+	err = md.Convert([]byte(response), &buf)
 	if err != nil {
 		panic(err)
 	}
