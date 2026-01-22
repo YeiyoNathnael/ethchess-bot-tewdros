@@ -1,8 +1,10 @@
 package gemini
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	tgmd "github.com/Mad-Pixels/goldmark-tgmd"
 	"github.com/joho/godotenv"
 	"google.golang.org/genai"
 	"log"
@@ -84,7 +86,18 @@ func GeminiResponse(userRequest string, model string, chatt *genai.Chat) (string
 	geminiRes := debugPrint(result)
 
 	json.Unmarshal(geminiRes, &GeminiRes)
-	return markdownToMarkdownV2(GeminiRes.Candidates[0].Content.Parts[0].Text), chat
+
+	response := GeminiRes.Candidates[0].Content.Parts[0].Text
+
+	var buf bytes.Buffer
+	md := tgmd.TGMD()
+
+	err := md.Convert([]byte(response), &buf)
+	if err != nil {
+		panic(err)
+	}
+
+	return buf.String(), chat
 
 }
 
