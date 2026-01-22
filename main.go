@@ -103,7 +103,7 @@ func getLichessRating(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	user := username[1]
 	userRating := lichess.GetLichessUser(user)
-	_, _ = ctx.EffectiveMessage.Reply(b, strconv.FormatInt(userRating, 10), &gotgbot.SendMessageOpts{
+	_, _ = ctx.EffectiveMessage.Reply(b, "User Bullet rating is: "+strconv.FormatInt(userRating, 10), &gotgbot.SendMessageOpts{
 		ParseMode: "HTML",
 	})
 	return nil
