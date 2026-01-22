@@ -17,6 +17,7 @@ import (
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
 	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/gemini"
 	"github.com/joho/godotenv"
+	"google.golang.org/genai"
 )
 
 // var botID int = 7720642643
@@ -85,21 +86,26 @@ func main() {
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	msg := ctx.EffectiveMessage
+
+	var history *genai.Chat
 	for _, e := range msg.NewChatMembers {
 		joinedUser := e.Username
-		_, err := msg.Reply(b, gemini.GeminiResponse("a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well. only send me the welcome message nothing else. the user's name is"+joinedUser), &gotgbot.SendMessageOpts{
+		geminiResponse, chat := gemini.GeminiResponse("a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well. only send me the welcome message nothing else. the user's name is"+joinedUser, gemini.Gemma_3_27b.String(), history)
+
+		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
 			ParseMode: "HTML",
 		},
 		)
 		if err != nil {
 			return fmt.Errorf("failed to send source: %w", err)
 		}
+		history = chat
 
 	}
 	// Check if this is a reply and if it's replying to the bot
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
-		reply := gemini.GeminiResponse(msg.Text)
+		reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_3_27b.String(), history)
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 			ParseMode: "HTML",
 		},
@@ -107,12 +113,13 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 		if err != nil {
 			return fmt.Errorf("failed to send source: %w", err)
 		}
+		history = chat
 	}
 	for _, e := range msg.Entities {
 		if e.Type == "mention" {
 			mentioned := msg.Text[e.Offset : e.Offset+e.Length]
 			if mentioned == botUserName {
-				reply := gemini.GeminiResponse(msg.Text)
+				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_3_27b.String(), history)
 				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 					ParseMode: "HTML",
 				},
@@ -120,6 +127,7 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 				if err != nil {
 					return fmt.Errorf("failed to send source: %w", err)
 				}
+				history = chat
 
 			}
 
