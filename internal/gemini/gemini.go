@@ -84,7 +84,7 @@ func GeminiResponse(userRequest string, model string, chatt *genai.Chat) (string
 	geminiRes := debugPrint(result)
 
 	json.Unmarshal(geminiRes, &GeminiRes)
-	return GeminiRes.Candidates[0].Content.Parts[0].Text, chat
+	return markdownToMarkdownV2(GeminiRes.Candidates[0].Content.Parts[0].Text), chat
 
 }
 
