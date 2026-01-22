@@ -23,6 +23,8 @@ import (
 // var botID int = 7720642643
 var botUserName string = "@ETHCHESSSupportbot"
 
+var history *genai.Chat
+
 func main() {
 
 	// Get token from the environment variable
@@ -86,8 +88,9 @@ func main() {
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	msg := ctx.EffectiveMessage
-
-	var history *genai.Chat
+	if history == nil {
+		history = &genai.Chat{}
+	}
 	for _, e := range msg.NewChatMembers {
 		joinedUser := e.Username
 		geminiResponse, chat := gemini.GeminiResponse("a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well. only send me the welcome message nothing else. the user's name is"+joinedUser, gemini.Gemma_3_27b.String(), history)
