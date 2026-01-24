@@ -95,7 +95,7 @@ func getLichessRating(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	if len(username) < 2 {
 
-		_, _ = ctx.EffectiveMessage.Reply(b, "Please provide a time limit in seconds, e.g., /open 300", nil)
+		_, _ = ctx.EffectiveMessage.Reply(b, "PLease PLease provide a proper username", nil)
 
 		return nil
 
