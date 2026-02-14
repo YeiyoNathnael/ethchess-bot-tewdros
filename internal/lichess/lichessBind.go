@@ -96,6 +96,8 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
 	if err != nil {
 
 		var history *genai.Chat
+		history = &genai.Chat{}
+
 		simplify_msg_prompt := fmt.Sprintf("Explain the error as simple as possible in 1-2 sentences. Here is the error %v", err.Error())
 
 		simple_err, _ := gemini.GeminiResponse(simplify_msg_prompt, gemini.Gemma_3_27b.String(), history)
