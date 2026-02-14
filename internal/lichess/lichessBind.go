@@ -98,7 +98,11 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
 		var history *genai.Chat
 		history = &genai.Chat{}
 
-		simplify_msg_prompt := fmt.Sprintf("Explain the error as simple as possible in 1-2 sentences. Here is the error %v", err.Error())
+		simplify_msg_prompt := fmt.Sprintf(
+			"You are a helpful support assistant. Translate the following technical error into a single, plain-English sentence for a non-technical user. "+
+				"Focus on the 'what' (the action that failed) rather than the 'why' (the code reason). "+
+				"Example: Instead of 'Unique constraint violation', say 'That username is already taken.' "+
+				"Error to translate: %v", err.Error())
 
 		simple_err, _ := gemini.GeminiResponse(simplify_msg_prompt, gemini.Gemma_3_27b.String(), history)
 
