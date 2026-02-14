@@ -26,7 +26,7 @@ func LichessBind(b *gotgbot.Bot, ctx *ext.Context) error {
 		panic(err)
 	}
 
-	_, err = ctx.EffectiveMessage.Reply(b, bindLink, &gotgbot.SendMessageOpts{
+	_, err = ctx.EffectiveMessage.Reply(b, buf.String(), &gotgbot.SendMessageOpts{
 		ParseMode: "MarkdownV2",
 	},
 	)
