@@ -47,7 +47,7 @@ func LichessBind(b *gotgbot.Bot, ctx *ext.Context) error {
 // NOTE: UNtil the website is made ill not add any check that will make this avoid working manually
 func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
 
-	dbUrl := os.Getenv("DBURl")
+	dbUrl := os.Getenv("DBURL")
 	contxt := context.Background()
 	auth_state := ctx.Args()
 
@@ -83,6 +83,7 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
 		return err
 	}
 
+	defer database.Close()
 	queries := db.New(database)
 	queries.CreateUser(contxt, authenticatedUser)
 
