@@ -56,7 +56,7 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("user", getLichessRating))
 	dispatcher.AddHandler(handlers.NewCommand("open", lichess.Open))
 
-	dispatcher.AddHandler(handlers.NewCommand("link", lichess.LichessBind))
+	dispatcher.AddHandler(handlers.NewCommand("bind", lichess.LichessBind))
 
 	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
 		for _, e := range msg.Entities {
