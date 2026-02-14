@@ -2,13 +2,19 @@ package lichess
 
 import (
 	"bytes"
+	"context"
+	"database/sql"
 	"encoding/base64"
 	"fmt"
+	"os"
+	"strconv"
+	"time"
+
 	tgmd "github.com/Mad-Pixels/goldmark-tgmd"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
+	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/db"
 	"github.com/google/uuid"
-	"strconv"
 )
 
 func LichessBind(b *gotgbot.Bot, ctx *ext.Context) error {
@@ -35,5 +41,75 @@ func LichessBind(b *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	return nil
+
+}
+
+// NOTE: UNtil the website is made ill not add any check that will make this avoid working manually
+func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	dbUrl := os.Getenv("DBURl")
+	contxt := context.Background()
+	auth_state := ctx.Args()
+
+	//FIX: Obviously needs better handling
+	if len(auth_state) < 3 {
+		return nil
+	}
+
+	stateToken := auth_state[1]
+	lichessUsername := auth_state[2]
+
+	telegramId, err := decodeTelegramId(stateToken)
+
+	if err != nil {
+		return err
+	}
+
+	authenticatedUser := db.CreateUserParams{
+		TelegramID: telegramId,
+		LichessUsername: sql.NullString{
+			String: lichessUsername,
+			Valid:  true,
+		},
+		CreatedAt: sql.NullString{
+			String: time.Now().Format(time.RFC3339),
+			Valid:  true,
+		},
+	}
+
+	database, err := db.Init(dbUrl)
+
+	if err != nil {
+		return err
+	}
+
+	queries := db.New(database)
+	queries.CreateUser(contxt, authenticatedUser)
+
+	successMessage := fmt.Sprintf("Successfully linked to Lichess account: %v", lichessUsername)
+	_, err = ctx.EffectiveMessage.Reply(b, successMessage, &gotgbot.SendMessageOpts{
+		ParseMode: "MarkdownV2",
+	})
+
+	return nil
+}
+
+func decodeTelegramId(encodedStateToken string) (string, error) {
+
+	stateTokenBytes, err := base64.StdEncoding.DecodeString(encodedStateToken)
+	if err != nil {
+		return "", err
+	}
+
+	stateToken := string(stateTokenBytes)
+
+	for i := 0; i < len(stateToken); i++ {
+
+		if stateToken[i] == ':' {
+			return stateToken[0:i], nil
+		}
+	}
+
+	return "", fmt.Errorf("invalid state token format")
 
 }

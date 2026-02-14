@@ -30,7 +30,6 @@ func main() {
 		panic("TOKEN environment variable is empty")
 	}
 
-	// Create bot from environment value.
 	b, err := gotgbot.NewBot(token, nil)
 	if err != nil {
 		panic("failed to create new bot: " + err.Error())
@@ -58,6 +57,7 @@ func main() {
 
 	dispatcher.AddHandler(handlers.NewCommand("bind", lichess.LichessBind))
 
+	dispatcher.AddHandler(handlers.NewCommand("auth_success", lichess.Auth_Success))
 	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
 		for _, e := range msg.Entities {
 			if e.Type == "mention" {
