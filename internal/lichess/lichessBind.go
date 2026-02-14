@@ -24,6 +24,10 @@ func LichessBind(b *gotgbot.Bot, ctx *ext.Context) error {
 	stateToken := base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(int(user.Id)) + ":" + uuid.New().String()))
 
 	bindLink := fmt.Sprintf("Click the link below to connect your lichess account: https://ethchess-website.vercel.app/telegram-link?state={%v}", stateToken)
+
+	//NOTE: so here there might be several calls for bindLink, like many /links
+	// so how to fix it?
+
 	var buf bytes.Buffer
 	md := tgmd.TGMD()
 
@@ -85,7 +89,11 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	defer database.Close()
 	queries := db.New(database)
-	queries.CreateUser(contxt, authenticatedUser)
+	err = queries.CreateUser(contxt, authenticatedUser)
+
+	if err != nil {
+		return err
+	}
 
 	successMessage := fmt.Sprintf("Successfully linked to Lichess account: %v", lichessUsername)
 	_, err = ctx.EffectiveMessage.Reply(b, successMessage, &gotgbot.SendMessageOpts{
