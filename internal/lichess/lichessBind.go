@@ -106,7 +106,7 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) (*genai
 		ctx.EffectiveMessage.Reply(b, simple_err, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
 		})
-
+		history = chat
 		return chat, err
 	}
 

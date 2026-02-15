@@ -113,11 +113,10 @@ func auth_success(b *gotgbot.Bot, ctx *ext.Context) error {
 	if history == nil {
 		history = &genai.Chat{}
 	}
-	chat, err := lichess.Auth_Success(b, ctx, history)
+	_, err := lichess.Auth_Success(b, ctx, history)
 	if err != nil {
 		return nil
 	}
-	history = chat
 
 	return nil
 
