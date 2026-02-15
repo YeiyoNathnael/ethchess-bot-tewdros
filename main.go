@@ -57,7 +57,7 @@ func main() {
 
 	dispatcher.AddHandler(handlers.NewCommand("bind", lichess.LichessBind))
 
-	dispatcher.AddHandler(handlers.NewCommand("auth_success", lichess.Auth_Success))
+	dispatcher.AddHandler(handlers.NewCommand("auth_success", auth_success))
 	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
 		for _, e := range msg.Entities {
 			if e.Type == "mention" {
@@ -106,6 +106,17 @@ func getLichessRating(b *gotgbot.Bot, ctx *ext.Context) error {
 		ParseMode: "HTML",
 	})
 	return nil
+}
+
+func auth_success(b *gotgbot.Bot, ctx *ext.Context) error {
+
+	if history == nil {
+		history = &genai.Chat{}
+	}
+	lichess.Auth_Success(b, ctx, history)
+
+	return nil
+
 }
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
