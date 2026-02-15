@@ -51,7 +51,7 @@ func LichessBind(b *gotgbot.Bot, ctx *ext.Context) error {
 }
 
 // NOTE: UNtil the website is made ill not add any check that will make this avoid working manually
-func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
+func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) error {
 
 	dbUrl := os.Getenv("DBURL")
 	contxt := context.Background()
@@ -94,9 +94,6 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
 	err = queries.CreateUser(contxt, authenticatedUser)
 
 	if err != nil {
-
-		var history *genai.Chat
-		history = &genai.Chat{}
 
 		simplify_msg_prompt := fmt.Sprintf(
 			"You are a helpful support assistant. Translate the following technical error into a single, plain-English sentence for a non-technical user. "+
