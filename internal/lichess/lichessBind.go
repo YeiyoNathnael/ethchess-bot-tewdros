@@ -16,7 +16,6 @@ import (
 	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/db"
 	"github.com/YeiyoNathnael/ethchess-bot-tewdros/internal/gemini"
 	"github.com/google/uuid"
-	"google.golang.org/genai"
 )
 
 func LichessBind(b *gotgbot.Bot, ctx *ext.Context) error {
@@ -101,7 +100,7 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
 				"Example: Instead of 'Unique constraint violation', say 'That username is already taken.' "+
 				"Error to translate: %v", err.Error())
 
-		simple_err, _ := gemini.GeminiResponse(simplify_msg_prompt, gemini.Gemma_3_27b.String(), history)
+		simple_err, _ := gemini.GeminiResponse(simplify_msg_prompt, gemini.Gemma_3_27b.String(), nil)
 
 		ctx.EffectiveMessage.Reply(b, simple_err, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
