@@ -51,7 +51,7 @@ func LichessBind(b *gotgbot.Bot, ctx *ext.Context) error {
 }
 
 // NOTE: UNtil the website is made ill not add any check that will make this avoid working manually
-func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) (*genai.Chat, error) {
+func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) error {
 
 	dbUrl := os.Getenv("DBURL")
 	contxt := context.Background()
@@ -59,7 +59,7 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) (*genai
 
 	//FIX: Obviously needs better handling
 	if len(auth_state) < 3 {
-		return nil, nil
+		return nil
 	}
 
 	stateToken := auth_state[1]
@@ -68,7 +68,7 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) (*genai
 	telegramId, err := decodeTelegramId(stateToken)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	authenticatedUser := db.CreateUserParams{
@@ -86,7 +86,7 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) (*genai
 	database, err := db.Init(dbUrl)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer database.Close()
@@ -101,13 +101,12 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) (*genai
 				"Example: Instead of 'Unique constraint violation', say 'That username is already taken.' "+
 				"Error to translate: %v", err.Error())
 
-		simple_err, chat := gemini.GeminiResponse(simplify_msg_prompt, gemini.Gemma_3_27b.String(), history)
+		simple_err, _ := gemini.GeminiResponse(simplify_msg_prompt, gemini.Gemma_3_27b.String(), history)
 
 		ctx.EffectiveMessage.Reply(b, simple_err, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
 		})
-		history = chat
-		return chat, err
+		return err
 	}
 
 	successMessage := fmt.Sprintf("Successfully linked to Lichess account: %v", lichessUsername)
@@ -115,7 +114,7 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context, history *genai.Chat) (*genai
 		ParseMode: "MarkdownV2",
 	})
 
-	return nil, nil
+	return nil
 }
 
 func decodeTelegramId(encodedStateToken string) (string, error) {
