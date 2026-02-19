@@ -1,20 +1,16 @@
 package lichess
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/joho/godotenv"
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 )
 
-func CreateArenaTournamentLink(tournamentDraft CreateArenaTournament) string {
-	var link ArenaTournamentResponse
-	_ = godotenv.Load()
+func CreateArenaTournamentLink(tournamentDraft CreateArenaTournament) {
+	err := godotenv.Load()
 	lichessAPI := os.Getenv("lichessAPI")
 	if lichessAPI == "" {
 		panic("lichessAPI is empty")
@@ -75,9 +71,7 @@ func CreateArenaTournamentLink(tournamentDraft CreateArenaTournament) string {
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 
-	json.Unmarshal(body, &link)
-	arenaTournamentLink := fmt.Sprintf("lichess.org/tournament/%v", link.Id)
-
-	return arenaTournamentLink
+	fmt.Println(res)
+	fmt.Println(string(body))
 
 }
