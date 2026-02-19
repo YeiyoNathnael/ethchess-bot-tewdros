@@ -18,7 +18,6 @@ import (
 
 // var botID int = 7720642643
 var botUserName string = "@ETHCHESSSupportbot"
-
 var history *genai.Chat
 
 func main() {
