@@ -109,7 +109,3 @@ type teamId struct {
 }
 
 /////////////////////////////////////////////
-
-type ArenaTournamentResponse struct {
-	Id string `json:"id"`
-}
