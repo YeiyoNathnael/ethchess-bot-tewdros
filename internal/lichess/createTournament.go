@@ -7,12 +7,18 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"os"
+	"github.com/joho/godotenv"
 )
 
 func CreateArenaTournamentLink(tournamentDraft CreateArenaTournament) {
 	err := godotenv.Load()
+	if err!=nil{
+		panic("env is empty")
+	}
+	
 	lichessAPI := os.Getenv("lichessAPI")
-	if lichessAPI == "" {
+	if lichessAPI == ""{
 		panic("lichessAPI is empty")
 	}
 
@@ -64,7 +70,7 @@ func CreateArenaTournamentLink(tournamentDraft CreateArenaTournament) {
 	req, _ := http.NewRequest("POST", urL, strings.NewReader(postData.Encode()))
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", lichessAPI))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v",lichessAPI))
 
 	res, _ := http.DefaultClient.Do(req)
 
