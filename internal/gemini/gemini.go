@@ -20,7 +20,7 @@ const (
 	Gemini_2_5_flash_lite
 	Gemini_3_flash
 	Gemma_3_12b
-	Gemma_3_27b
+	Gemma_4_31b
 )
 
 // A map to store the string representation of each state
@@ -29,7 +29,7 @@ var Models = map[GeminiModels]string{
 	Gemini_2_5_flash_lite: "gemini-2.5-flash-lite",
 	Gemini_3_flash:        "gemini-3-flash-preview",
 	Gemma_3_12b:           "gemma-3-12b-it",
-	Gemma_3_27b:           "gemma-3-27b-it",
+	Gemma_4_31b:           "gemma-4-31b-it",
 }
 
 // String implements the fmt.Stringer interface
