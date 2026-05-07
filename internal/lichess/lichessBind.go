@@ -100,7 +100,7 @@ func Auth_Success(b *gotgbot.Bot, ctx *ext.Context) error {
 				"Example: Instead of 'Unique constraint violation', say 'That username is already taken.' "+
 				"Error to translate: %v", err.Error())
 
-		simple_err, _ := gemini.GeminiResponse(simplify_msg_prompt, gemini.Gemma_3_27b.String(), nil)
+		simple_err, _ := gemini.GeminiResponse(simplify_msg_prompt, gemini.Gemma_4_31b.String(), nil)
 
 		ctx.EffectiveMessage.Reply(b, simple_err, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
