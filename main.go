@@ -20,6 +20,7 @@ import (
 var botUserName string = "@ETHCHESSSupportbot"
 var history *genai.Chat
 
+
 func main() {
 
 	// Get token from the environment variable
@@ -54,9 +55,6 @@ func main() {
 	dispatcher.AddHandler(handlers.NewCommand("user", getLichessRating))
 	dispatcher.AddHandler(handlers.NewCommand("open", lichess.Open))
 
-	dispatcher.AddHandler(handlers.NewCommand("bind", lichess.LichessBind))
-
-	dispatcher.AddHandler(handlers.NewCommand("auth_success", lichess.Auth_Success))
 	dispatcher.AddHandler(handlers.NewMessage(func(msg *gotgbot.Message) bool {
 		for _, e := range msg.Entities {
 			if e.Type == "mention" {
@@ -109,6 +107,23 @@ func getLichessRating(b *gotgbot.Bot, ctx *ext.Context) error {
 
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
+		systemInstruction := &genai.Content{
+    	Role: "user",
+	    Parts: []*genai.Part{
+        {
+				Text: `You are Tewodros (Teddy), the official support bot of EthChess — Ethiopia's fastest-growing chess community, based in Addis Ababa.
+
+Your role is to assist club members, newcomers, and chess enthusiasts with anything related to EthChess: events, membership, tournaments, club info, and general chess questions.
+
+Guidelines:
+- Be friendly, warm, and community-oriented
+- Keep responses brief and clear
+- When you don't know something specific about the club, say so honestly and suggest they reach out to the club directly
+- You may use chess analogies or light humor when appropriate
+- Always represent EthChess positively and professionally`,
+				},
+  	  },
+		}
 	msg := ctx.EffectiveMessage
 	if history == nil {
 		history = &genai.Chat{}
@@ -141,23 +156,6 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
 		//TODO: room for improvement on the hardcoded prompt :)
-		systemInstruction := &genai.Content{
-    	Role: "user",
-	    Parts: []*genai.Part{
-        {
-				Text: `You are Tewodros (Teddy), the official support bot of EthChess — Ethiopia's fastest-growing chess community, based in Addis Ababa.
-
-Your role is to assist club members, newcomers, and chess enthusiasts with anything related to EthChess: events, membership, tournaments, club info, and general chess questions.
-
-Guidelines:
-- Be friendly, warm, and community-oriented
-- Keep responses brief and clear
-- When you don't know something specific about the club, say so honestly and suggest they reach out to the club directly
-- You may use chess analogies or light humor when appropriate
-- Always represent EthChess positively and professionally`,
-				},
-  	  },
-		}
 		reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_31b.String(), history,systemInstruction)
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
@@ -172,7 +170,7 @@ Guidelines:
 		if e.Type == "mention" {
 			mentioned := msg.Text[e.Offset : e.Offset+e.Length]
 			if mentioned == botUserName {
-				reply, chat := gemini.GeminiResponse(msg.Text+"Remember to limit your response to less than 1024 characters or 10 sentences.", gemini.Gemma_4_31b.String(), history)
+				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_31b.String(), history,systemInstruction)
 				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 					ParseMode: "MarkdownV2",
 				},
