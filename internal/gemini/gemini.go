@@ -1,6 +1,7 @@
 package gemini
 
 import (
+	"strings"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -9,6 +10,7 @@ import (
 	"google.golang.org/genai"
 	"log"
 	"os"
+
 )
 
 // Your Google API key
@@ -16,19 +18,11 @@ import (
 type GeminiModels int
 
 const (
-	Gemini_2_5_flash GeminiModels = iota
-	Gemini_2_5_flash_lite
-	Gemini_3_flash
-	Gemma_3_12b
-	Gemma_4_31b
+	Gemma_4_31b GeminiModels = iota
 )
 
 // A map to store the string representation of each state
 var Models = map[GeminiModels]string{
-	Gemini_2_5_flash:      "gemini-2.5-flash",
-	Gemini_2_5_flash_lite: "gemini-2.5-flash-lite",
-	Gemini_3_flash:        "gemini-3-flash-preview",
-	Gemma_3_12b:           "gemma-3-12b-it",
 	Gemma_4_31b:           "gemma-4-31b-it",
 }
 
@@ -39,20 +33,11 @@ func (n GeminiModels) String() string {
 
 func GeminiResponse(userRequest string, model string, chatt *genai.Chat) (string, *genai.Chat) {
 
-	type Part struct {
-		Text string `json:"text"`
-		Role string `json:"role"`
-	}
+	type Part *genai.Part
 
-	type Content struct {
-		Parts []Part `json:"parts"`
-		Role  string `json:"role"`
-	}
-
-	type Candidate struct {
-		Content      Content `json:"content"`
-		FinishReason string  `json:"finishReason"`
-	}
+	type Content *genai.Content
+	type Candidate *genai.Candidate 	
+	
 	var GeminiRes struct {
 		Url string `json:"url"`
 
@@ -87,7 +72,7 @@ func GeminiResponse(userRequest string, model string, chatt *genai.Chat) (string
 
 	json.Unmarshal(geminiRes, &GeminiRes)
 
-	response := GeminiRes.Candidates[0].Content.Parts[0].Text
+	response := extractResponseText(GeminiRes.Candidates[0].Content.Parts);
 
 	var buf bytes.Buffer
 	md := tgmd.TGMD()
@@ -109,4 +94,16 @@ func debugPrint[T any](r *T) []byte {
 	}
 
 	return response
+}
+func extractResponseText(parts []*genai.Part) string {
+    var sb strings.Builder
+    for _, part := range parts {
+        if part.Thought {
+            continue // skip reasoning/thinking parts
+        }
+        if part.Text != "" {
+            sb.WriteString(part.Text)
+        }
+    }
+    return sb.String()
 }
