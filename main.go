@@ -114,8 +114,18 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 		history = &genai.Chat{}
 	}
 	for _, e := range msg.NewChatMembers {
+
 		joinedUser := e.Username
-		geminiResponse, chat := gemini.GeminiResponse("a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well. only send me the welcome message nothing else. the user's name is"+joinedUser, gemini.Gemma_4_31b.String(), history)
+		systemInstructionNewJoiningUser := &genai.Content{
+    	Role: "user",
+	    Parts: []*genai.Part{
+        {
+					Text: "a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well.ethchess is a chess club found in Ethiopia and the fastest growing chess community in ethiopia.  only send me the welcome message nothing else. the user's name is"+joinedUser,
+				},
+  	  },
+		}
+
+		geminiResponse, chat := gemini.GeminiResponse("",gemini.Gemma_4_31b.String(), history,systemInstructionNewJoiningUser)
 
 		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
@@ -131,7 +141,24 @@ func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
 		//TODO: room for improvement on the hardcoded prompt :)
-		reply, chat := gemini.GeminiResponse(msg.Text+"Remember to limit your response to less than 1024 characters or 10 sentences.", gemini.Gemma_4_31b.String(), history)
+		systemInstruction := &genai.Content{
+    	Role: "user",
+	    Parts: []*genai.Part{
+        {
+				Text: `You are Tewodros (Teddy), the official support bot of EthChess — Ethiopia's fastest-growing chess community, based in Addis Ababa.
+
+Your role is to assist club members, newcomers, and chess enthusiasts with anything related to EthChess: events, membership, tournaments, club info, and general chess questions.
+
+Guidelines:
+- Be friendly, warm, and community-oriented
+- Keep responses brief and clear
+- When you don't know something specific about the club, say so honestly and suggest they reach out to the club directly
+- You may use chess analogies or light humor when appropriate
+- Always represent EthChess positively and professionally`,
+				},
+  	  },
+		}
+		reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_31b.String(), history,systemInstruction)
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
 		},

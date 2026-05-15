@@ -31,10 +31,19 @@ func (n GeminiModels) String() string {
 	return Models[n]
 }
 
-func GeminiResponse(userRequest string, model string, chatt *genai.Chat) (string, *genai.Chat) {
+func GeminiResponse(userRequest string, model string, chatt *genai.Chat, systemInstruction *genai.Content) (string, *genai.Chat) {
 
+	GoogleSearch := &genai.GoogleSearch{
+		SearchTypes : &genai.SearchTypes{
+			WebSearch: &genai.WebSearch{},
+			ImageSearch: &genai.ImageSearch{},
+		},
+	}
+	Tools := &genai.Tool{
+		GoogleSearch : GoogleSearch,
+		
+	}
 	type Part *genai.Part
-
 	type Content *genai.Content
 	type Candidate *genai.Candidate 	
 	
@@ -58,7 +67,10 @@ func GeminiResponse(userRequest string, model string, chatt *genai.Chat) (string
 		log.Fatal(err)
 	}
 
-	chat, err := client.Chats.Create(ctx, model, nil, chatt.History(true))
+	chat, err := client.Chats.Create(ctx, model, &genai.GenerateContentConfig{
+	Tools: []*genai.Tool{Tools},
+		SystemInstruction: systemInstruction,
+		}, chatt.History(true))
 	if err != nil {
 		log.Fatal(err)
 	}
