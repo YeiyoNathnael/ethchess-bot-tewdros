@@ -36,7 +36,7 @@ func GeminiResponse(userRequest string, model string, chatt *genai.Chat, systemI
 	GoogleSearch := &genai.GoogleSearch{
 		SearchTypes : &genai.SearchTypes{
 			WebSearch: &genai.WebSearch{},
-			ImageSearch: &genai.ImageSearch{},
+		//	ImageSearch: &genai.ImageSearch{},
 		},
 	}
 	Tools := &genai.Tool{
