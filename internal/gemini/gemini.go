@@ -77,7 +77,7 @@ func GeminiResponse(userRequest string, model string, chatt *genai.Chat, systemI
 
 	result, err := chat.SendMessage(ctx, genai.Part{Text: userRequest})
 	if err != nil {
-    return "Sorry, I'm having trouble connecting right now. Please try again in a moment!", chat
+    return "Sorry, I'm having trouble connecting right now Please try again in a moment!", chat
 	}
 	geminiRes := debugPrint(result)
 
