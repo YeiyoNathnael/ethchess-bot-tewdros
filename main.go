@@ -151,7 +151,7 @@ RULES:
 			},
 		}
 
-		geminiResponse, chat := gemini.GeminiResponse("", gemini.Gemma_4_26_A4B.String(), history, systemInstructionNewJoiningUser)
+		geminiResponse, chat := gemini.GeminiResponse("greet the user", gemini.Gemma_4_26_A4B.String(), history, systemInstructionNewJoiningUser)
 
 		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
