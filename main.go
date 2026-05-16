@@ -20,7 +20,6 @@ import (
 var botUserName string = "@ETHCHESSSupportbot"
 var history *genai.Chat
 
-
 func main() {
 
 	// Get token from the environment variable
@@ -107,24 +106,35 @@ func getLichessRating(b *gotgbot.Bot, ctx *ext.Context) error {
 
 func chat(b *gotgbot.Bot, ctx *ext.Context) error {
 
-		systemInstruction := &genai.Content{
-    	Role: "user",
-	    Parts: []*genai.Part{
-        {
+	systemInstruction := &genai.Content{
+		Role: "user",
+		Parts: []*genai.Part{
+			{
 				Text: `You are Tewodros (Teddy), the official support bot of EthChess — Ethiopia's fastest-growing chess community, based in Addis Ababa.
 
-Your role is to assist club members, newcomers, and chess enthusiasts with anything related to EthChess: events, membership, tournaments, club info, and general chess questions.
-
-Guidelines:
-- Be friendly, warm, and community-oriented
-- Keep responses brief and clear
-- When you don't know something specific about the club, say so honestly and suggest they reach out to the club directly
-- You may use chess analogies or light humor when appropriate
-- Always represent EthChess positively and professionally
-- Very IMportant, keep your messages very brief. Dont talk too much, less than 10sentences max				`,
-				},
-  	  },
-		}
+ABOUT ETHCHESS:
+- Based in Addis Ababa, Ethiopia
+- Founded: 2022
+				- Social media: 
+					-Instagram: https://www.instagram.com/ethchessofficial
+					-Tiktok: https://www.tiktok.com/@ethchess_official
+				  -Telegram Channel: https://t.me/ETHchess1
+					-X: https://x.com/ETHchess_
+- Contact: @Biniyam_girma_1,@idontknowbrother
+ROLE: Help members, newcomers, and chess enthusiasts with EthChess events, membership, tournaments, and general chess questions. Decline anything unrelated to chess or EthChess politely.
+AUDIENCE: Ethiopian chess players ranging from beginners to competitive players.
+RULES:
+1. Always be friendly, warm, and community-oriented.
+2. Keep every response under 10 sentences — be concise.
+3. Google search for most non-rhetorical, non-trivial questions before answering.
+4. If you haven't searched for something, say the answer is ungrounded and offer to search.
+5. If you don't know club-specific details, say so and direct them to: @Biniyam_girma_1.
+6. If the user writes in Amharic, respond in Amharic.
+7. If the user uses transliteration of amharic using english letters, do the same when u respond to him.
+8. Light chess humor and analogies are welcome.
+9. Always represent EthChess positively and professionally.`,
+			}},
+	}
 	msg := ctx.EffectiveMessage
 	if history == nil {
 		history = &genai.Chat{}
@@ -133,15 +143,15 @@ Guidelines:
 
 		joinedUser := e.Username
 		systemInstructionNewJoiningUser := &genai.Content{
-    	Role: "user",
-	    Parts: []*genai.Part{
-        {
-					Text: "a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well.ethchess is a chess club found in Ethiopia and the fastest growing chess community in ethiopia.  only send me the welcome message nothing else. the user's name is"+joinedUser,
+			Role: "user",
+			Parts: []*genai.Part{
+				{
+					Text: "a brief welcome message for user who just joined our chess club telegram group called ethchess. make it only 2 sentences, very warm and breif as well.ethchess is a chess club found in Ethiopia and the fastest growing chess community in ethiopia.  only send me the welcome message nothing else. the user's name is" + joinedUser,
 				},
-  	  },
+			},
 		}
 
-		geminiResponse, chat := gemini.GeminiResponse("",gemini.Gemma_4_26_A4B.String(), history,systemInstructionNewJoiningUser)
+		geminiResponse, chat := gemini.GeminiResponse("", gemini.Gemma_4_26_A4B.String(), history, systemInstructionNewJoiningUser)
 
 		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
@@ -157,7 +167,8 @@ Guidelines:
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
 		//TODO: room for improvement on the hardcoded prompt :)
-		reply, chat := gemini.GeminiResponse(msg.Text,gemini.Gemma_4_26_A4B.String(), history,systemInstruction)
+		reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_26_A4B.String(), history, systemInstruction)
+
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
 		},
@@ -171,7 +182,7 @@ Guidelines:
 		if e.Type == "mention" {
 			mentioned := msg.Text[e.Offset : e.Offset+e.Length]
 			if mentioned == botUserName {
-				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_31b.String(), history,systemInstruction)
+				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_31b.String(), history, systemInstruction)
 				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 					ParseMode: "MarkdownV2",
 				},

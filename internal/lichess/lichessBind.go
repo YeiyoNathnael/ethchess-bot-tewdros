@@ -1,4 +1,5 @@
- package lichess
+package lichess
+
 //
 // import (
 // 	"bytes"
