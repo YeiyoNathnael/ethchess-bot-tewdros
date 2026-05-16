@@ -19,11 +19,13 @@ type GeminiModels int
 
 const (
 	Gemma_4_31b GeminiModels = iota
+	Gemma_4_26_A4B 
 )
 
 // A map to store the string representation of each state
 var Models = map[GeminiModels]string{
 	Gemma_4_31b:           "gemma-4-31b-it",
+	Gemma_4_26_A4B:				 "gemma-4-26b-a4b-it",
 }
 
 // String implements the fmt.Stringer interface

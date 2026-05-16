@@ -141,7 +141,7 @@ Guidelines:
   	  },
 		}
 
-		geminiResponse, chat := gemini.GeminiResponse("",gemini.Gemma_4_31b.String(), history,systemInstructionNewJoiningUser)
+		geminiResponse, chat := gemini.GeminiResponse("",gemini.Gemma_4_26_A4B.String(), history,systemInstructionNewJoiningUser)
 
 		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
@@ -157,7 +157,7 @@ Guidelines:
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
 		//TODO: room for improvement on the hardcoded prompt :)
-		reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_31b.String(), history,systemInstruction)
+		reply, chat := gemini.GeminiResponse(msg.Text,gemini.Gemma_4_26_A4B.String(), history,systemInstruction)
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
 		},
