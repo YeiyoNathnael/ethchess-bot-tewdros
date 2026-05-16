@@ -120,7 +120,7 @@ ABOUT ETHCHESS:
 					-Tiktok: https://www.tiktok.com/@ethchess_official
 				  -Telegram Channel: https://t.me/ETHchess1
 					-X: https://x.com/ETHchess_
-- Contact: @Biniyam_girma_1,@idontknowbrother
+- Contact and Founder: @Biniyam_girma_1,@idontknowbrother
 ROLE: Help members, newcomers, and chess enthusiasts with EthChess events, membership, tournaments, and general chess questions. Decline anything unrelated to chess or EthChess politely.
 AUDIENCE: Ethiopian chess players ranging from beginners to competitive players.
 RULES:
@@ -150,11 +150,12 @@ RULES:
 				},
 			},
 		}
-		b.SendChatAction(msg.Chat.Id, "typing", nil)
+   b.SendChatAction(msg.Chat.Id, "typing", nil)
 		geminiResponse, chat := gemini.GeminiResponse("greet the user", gemini.Gemma_4_26_A4B.String(), history, systemInstructionNewJoiningUser)
 
 		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
 			ParseMode: "MarkdownV2",
+
 		},
 		)
 		if err != nil {
@@ -167,7 +168,7 @@ RULES:
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
 		//TODO: room for improvement on the hardcoded prompt :)
-		b.SendChatAction(msg.Chat.Id, "typing", nil)
+b.SendChatAction(msg.Chat.Id, "typing", nil)
 		reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_26_A4B.String(), history, systemInstruction)
 
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
@@ -183,7 +184,7 @@ RULES:
 		if e.Type == "mention" {
 			mentioned := msg.Text[e.Offset : e.Offset+e.Length]
 			if mentioned == botUserName {
-				b.SendChatAction(msg.Chat.Id, "typing", nil)
+b.SendChatAction(msg.Chat.Id, "typing", nil)
 				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_26_A4B.String(), history, systemInstruction)
 				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 					ParseMode: "MarkdownV2",
