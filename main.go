@@ -182,7 +182,7 @@ RULES:
 		if e.Type == "mention" {
 			mentioned := msg.Text[e.Offset : e.Offset+e.Length]
 			if mentioned == botUserName {
-				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_31b.String(), history, systemInstruction)
+				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_26_A4B.String(), history, systemInstruction)
 				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 					ParseMode: "MarkdownV2",
 				},
