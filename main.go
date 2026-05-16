@@ -150,7 +150,7 @@ RULES:
 				},
 			},
 		}
-
+		b.SendChatAction(msg.Chat.Id, "typing", nil)
 		geminiResponse, chat := gemini.GeminiResponse("greet the user", gemini.Gemma_4_26_A4B.String(), history, systemInstructionNewJoiningUser)
 
 		_, err := msg.Reply(b, geminiResponse, &gotgbot.SendMessageOpts{
@@ -167,6 +167,7 @@ RULES:
 	if msg.ReplyToMessage != nil && msg.ReplyToMessage.From != nil && msg.ReplyToMessage.From.Id == b.Id {
 
 		//TODO: room for improvement on the hardcoded prompt :)
+		b.SendChatAction(msg.Chat.Id, "typing", nil)
 		reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_26_A4B.String(), history, systemInstruction)
 
 		_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
@@ -182,6 +183,7 @@ RULES:
 		if e.Type == "mention" {
 			mentioned := msg.Text[e.Offset : e.Offset+e.Length]
 			if mentioned == botUserName {
+				b.SendChatAction(msg.Chat.Id, "typing", nil)
 				reply, chat := gemini.GeminiResponse(msg.Text, gemini.Gemma_4_26_A4B.String(), history, systemInstruction)
 				_, err := msg.Reply(b, reply, &gotgbot.SendMessageOpts{
 					ParseMode: "MarkdownV2",
