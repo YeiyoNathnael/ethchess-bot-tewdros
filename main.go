@@ -141,7 +141,7 @@ RULES:
 	}
 	for _, e := range msg.NewChatMembers {
 
-		joinedUser := e.Username
+		joinedUser := e.FirstName
 		systemInstructionNewJoiningUser := &genai.Content{
 			Role: "user",
 			Parts: []*genai.Part{
