@@ -1,2 +1,6 @@
 .env
 heroku*
+
+# Build output
+/main
+/bin/
