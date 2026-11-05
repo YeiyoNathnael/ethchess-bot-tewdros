@@ -1,96 +1,88 @@
-# ETHCHESS Bot — Tewodros ♟️🤖
+# Tewodros
 
-A Telegram bot for the **ETHCHESS** chess club that facilitates Lichess chess games, retrieves player ratings, and provides AI-powered chat using Google Gemini.
+Tewodros is the Telegram bot for the ETHCHESS chess club in Addis Ababa, Ethiopia. Members use it to start Lichess games from a group chat, look up player ratings, and talk to an assistant that answers mentions and replies.
+
+The bot is written in Go and runs as a long-polling worker.
 
 ## Features
 
-- **Chess Challenges** — Create open Lichess challenges directly from Telegram
-  - Blitz (rated & unrated)
-  - Bullet (rated & unrated)
-  - Custom time controls
-- **Player Lookup** — Retrieve a Lichess user's bullet rating
-- **AI Chat** — Responds to mentions and replies using Google Gemini models
-- **Welcome Messages** — AI-generated greetings for new group members
+- Creates open Lichess challenges in blitz, bullet and custom time controls
+- Looks up a player's Lichess bullet rating
+- Answers mentions and replies with Gemma models through the Google GenAI SDK, with Google Search available to the model
+- Greets new group members with a generated welcome message
+- Formats model output as Telegram-compatible Markdown
 
-## Bot Commands
+## Commands
 
 | Command | Description |
 |---|---|
-| `/start` | Introduce the bot and list available commands |
-| `/blitz` | Create an unrated blitz game (3+0) |
-| `/blitzr` | Create a rated blitz game (3+2) |
-| `/bullet` | Create an unrated bullet game (1+0) |
-| `/bulletr` | Create a rated bullet game (1+0) |
-| `/open x y` | Create a custom game (x = seconds, y = increment) |
-| `/user <username>` | Look up a Lichess user's bullet rating |
+| `/start` | Introduces the bot and lists its commands |
+| `/blitz` | Creates an unrated 3+0 game |
+| `/blitzr` | Creates a rated 3+2 game |
+| `/bullet` | Creates an unrated 1+0 game |
+| `/bulletr` | Creates a rated 1+0 game |
+| `/open x y` | Creates a custom game with `x` seconds and `y` seconds of increment |
+| `/user <username>` | Returns a player's Lichess bullet rating |
 
-## Project Structure
+The bot responds in chat when it is mentioned, when a member replies to a message, and when a new member joins.
 
+## Getting started
+
+### Requirements
+
+- Go 1.25.5 or later
+- A Telegram bot token from [@BotFather](https://t.me/BotFather)
+- A [Google AI API key](https://ai.google.dev/)
+
+### Configuration
+
+Set these environment variables:
+
+| Variable | Description |
+|---|---|
+| `TOKEN` | Telegram bot token |
+| `GEMINI_API_KEY` | Google AI API key |
+| `DBURL` | libSQL database URL, used by the tournament draft module |
+| `lichessAPI` | Lichess API token, used to create tournaments |
+
+### Run
+
+```bash
+git clone https://github.com/YeiyoNathnael/ethchess-bot-tewdros.git
+cd ethchess-bot-tewdros
+go build -o bin/ethchess-bot-tewdros .
+./bin/ethchess-bot-tewdros
 ```
-.
-├── main.go                  # Bot entry point, command handlers, Lichess challenge logic
-├── go.mod                   # Go module definition
-├── go.sum                   # Dependency checksums
-├── Procfile                 # Heroku deployment config
-└── internal/
-    ├── gemini/
-    │   └── gemini.go        # Google Gemini AI integration
-    └── lichess/
-        ├── getLichessUser.go # Lichess API user lookup
-        └── userTypes.go     # Lichess data structures
+
+### Docker
+
+```bash
+docker build -t tewodros .
+docker run --env TOKEN --env GEMINI_API_KEY tewodros
 ```
-
-## Prerequisites
-
-- [Go](https://go.dev/) 1.25.5 or later
-- A [Telegram Bot Token](https://core.telegram.org/bots#botfather)
-- A [Google Gemini API Key](https://ai.google.dev/)
-
-## Setup
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/YeiyoNathnael/ethchess-bot-tewdros.git
-   cd ethchess-bot-tewdros
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   go mod download
-   ```
-
-3. **Configure environment variables**
-
-   Create a `.env` file in the project root:
-
-   ```env
-   TOKEN=your-telegram-bot-token
-   GEMINI_API_KEY=your-google-gemini-api-key
-   ```
-
-4. **Build and run**
-
-   ```bash
-   go build -o bin/ethchess-bot-tewdros
-   ./bin/ethchess-bot-tewdros
-   ```
 
 ## Deployment
 
-The project includes a `Procfile` for deployment on [Heroku](https://www.heroku.com/):
+The repository includes a multi-stage `Dockerfile` and a `heroku.yml` that runs the bot as a Heroku worker dyno. Set the environment variables in the app's config before deploying.
 
+## Project layout
+
+```text
+main.go                    Entry point, dispatcher and chat handler
+internal/
+  gemini/                  Google GenAI client and response handling
+  lichess/                 Lichess challenges, user lookups and tournaments
+  tournament/              Tournament draft handling
+  db/                      sqlc-generated database access
+  schema.sql               Tables for users, organizers, drafts and the audit log
+  query.sql                SQL queries used by sqlc
+  sqlc.yaml                sqlc configuration
 ```
-worker: bin/ethchess-bot-tewdros
-```
 
-Set the `TOKEN` and `GEMINI_API_KEY` environment variables in your Heroku app settings.
+## Built with
 
-## Tech Stack
-
-- **Language** — [Go](https://go.dev/)
-- **Telegram Framework** — [gotgbot](https://github.com/PaulSonOfLars/gotgbot)
-- **AI** — [Google Gemini API](https://ai.google.dev/) via `google.golang.org/genai`
-- **Chess Platform** — [Lichess API](https://lichess.org/api)
-- **Markdown** — [goldmark-tgmd](https://github.com/Mad-Pixels/goldmark-tgmd) for Telegram-compatible Markdown
+- [gotgbot](https://github.com/PaulSonOfLars/gotgbot) for the Telegram Bot API
+- [Google GenAI SDK for Go](https://pkg.go.dev/google.golang.org/genai)
+- [Lichess API](https://lichess.org/api)
+- [libsql-client-go](https://github.com/tursodatabase/libsql-client-go) and [sqlc](https://sqlc.dev/)
+- [goldmark-tgmd](https://github.com/Mad-Pixels/goldmark-tgmd)
